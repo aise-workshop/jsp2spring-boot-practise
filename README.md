@@ -1,5 +1,8 @@
-# autodev-legacy
+# JSP 2 Spring Boot 练习
 
+初始提示词
+
+```
 我正在创建一个 Java CLI 应用，以自动转换遗留的 JSP 项目为 Spring Boot 应用；我需要你帮助我创建基本的脚手架，我初步想到的技术栈：
 
 - 使用 Gradle 用来作为构建系统
@@ -13,7 +16,6 @@
 
 我预期的包分层类似于：
 
-```java
 jsp2springboot-cli/
 ├── build.gradle
 ├── settings.gradle
