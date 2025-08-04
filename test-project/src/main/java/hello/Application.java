@@ -5,19 +5,15 @@ import org.apache.catalina.session.PersistentManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.util.Arrays;
 
-@Configuration
-@ComponentScan
-@EnableAutoConfiguration
+@SpringBootApplication
 public class Application {
     private Log log = LogFactory.getLog(Application.class);
 
