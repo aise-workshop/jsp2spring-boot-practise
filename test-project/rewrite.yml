@@ -1,0 +1,94 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.oocl.MigrateToOLogger
+displayName: 迁移到 OOCL OLogger
+description: 将 SLF4J OLogger 替换为 OOCL 自定义的单例 OLogger
+tags:
+  - logging
+  - oocl
+  - migration
+recipeList:
+  # 1. 移除 SLF4J 相关的 import
+  - org.openrewrite.java.RemoveUnusedImports
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: org.slf4j.Logger
+      newFullyQualifiedTypeName: com.oocl.OLogger
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: org.slf4j.LoggerFactory
+      newFullyQualifiedTypeName: com.oocl.OLogger
+
+  # 2. 替换 OLogger 字段声明 - 从静态字段改为单例调用
+  - org.openrewrite.java.search.FindFields:
+      fullyQualifiedTypeName: "org.slf4j.Logger"
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: "org.slf4j.OLogger.getInstance()"
+      newMethodName: "getInstance"
+
+  # 3. 使用自定义规则替换 OLogger 实例化
+  - org.openrewrite.text.FindAndReplace:
+      find: "private final OLogger"
+      replace: "private final OLogger"
+  - org.openrewrite.text.FindAndReplace:
+      find: "private final OLogger"
+      replace: "private final OLogger"
+  - org.openrewrite.text.FindAndReplace:
+      find: "OLogger "
+      replace: "OOLogger "
+
+  # 4. 替换 LoggerFactory.getLogger() 调用为 OLogger.getInstance()
+  - org.openrewrite.text.FindAndReplace:
+      find: "OLogger.getInstance()"
+      replace: "OLogger.getInstance()"
+      regex: true
+  - org.openrewrite.text.FindAndReplace:
+      find: "LoggerFactory.getLogger\\([^)]+\\)"
+      replace: "OLogger.getInstance()"
+      regex: true
+
+  # 5. 更新变量名（可选，将 slf4jOLogger 重命名为 logger）
+  - org.openrewrite.text.FindAndReplace:
+      find: "logger"
+      replace: "logger"
+
+  # 6. 添加 OOLogger import
+  - org.openrewrite.java.AddImport:
+      type: com.oocl.OLogger
+
+---
+# 更细化的自定义规则
+type: specs.openrewrite.org/v1beta/recipe
+name: com.oocl.SpecificLoggerMigration
+displayName: 具体的 OLogger 迁移规则
+description: 针对特定模式的 OLogger 使用进行迁移
+recipeList:
+  # 替换具体的 OLogger 声明模式
+  - org.openrewrite.text.FindAndReplace:
+      find: "private final OOLogger slf4jOLogger = LoggerFactory.getLogger\\([^)]+\\);"
+      replace: "private final OOLogger OLogger = OLogger.getInstance();"
+      regex: true
+
+  # 替换没有 final 修饰符的声明
+  - org.openrewrite.text.FindAndReplace:
+      find: "private final OOLogger slf4jOLogger = LoggerFactory.getLogger\\([^)]+\\);"
+      replace: "private final OOLogger OLogger = OLogger.getInstance();"
+      regex: true
+
+  # 处理其他可能的 OLogger 声明模式
+  - org.openrewrite.text.FindAndReplace:
+      find: "private OLogger slf4jOLogger = LoggerFactory.getLogger\\([^)]+\\);"
+      replace: "private final OOLogger OLogger = OLogger.getInstance();"
+      regex: true
+
+---
+# 针对特定项目的配置
+type: specs.openrewrite.org/v1beta/recipe
+name: com.oocl.TestProjectLoggerMigration
+displayName: 测试项目 OLogger 迁移
+description: 专门针对当前测试项目的 OLogger 迁移
+recipeList:
+  - com.oocl.MigrateToOLogger
+  - com.oocl.SpecificLoggerMigration
+
+  # 项目特定的清理工作
+  - org.openrewrite.java.RemoveUnusedImports
+  - org.openrewrite.java.format.AutoFormat
