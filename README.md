@@ -1,5 +1,7 @@
 # JSP 2 Spring Boot 练习
 
+> **English Version**: For English documentation, please refer to [README_EN.md](README_EN.md)
+
 ## 初始提示词
 
 ```
